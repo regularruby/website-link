@@ -9,7 +9,8 @@ const login = require("./login.json")
 client.login(json.login.discord_bot.client_token);
 
 client.on("ready", () => {
-    
+    delete require.cache[require.resolve('./events/ready.js')]
+    require('./events/ready.js')(client,"discord")
 });
 
 client.on("message", msg => {
