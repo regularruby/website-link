@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/regularruby/website-link/issues"
   },
-  "homepage": "https://github.com/regularruby/website-link#readme"
+  "homepage": "https://github.com/regularruby/website-link#readme",
+  "dependencies": {
+    "discord.js": "^11.5.1"
+  }
 }
