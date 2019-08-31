@@ -1,0 +1,9 @@
+{
+    "discord" : {
+        "token" : ""
+    },
+    "messenger" : {
+        "email" : "",
+        "password" : ""
+    }
+}
