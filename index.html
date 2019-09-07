@@ -1,49 +1,119 @@
-<!DOCTYPE html>
 <html>
 
 <head>
-    <!--Import Google Icon Font-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!--Import materialize.css-->
-    <link type="text/css" rel="stylesheet" href="materialize/css/materialize.min.css" media="screen,projection" />
-
-    <!--Let browser know website is optimized for mobile-->
+    <title>chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body {}
+
+        #messageArea {
+            display: all;
+        }
+        #UserFormArea {
+            display: none
+        }
+    </style>
 </head>
 
-<body class="grey darken-4">
-    <nav class="nav-extended blue-grey darken-4">
-        <div class="nav-wrapper">
+<body>
+
+    <nav>
+        <div class="nav-wrapper blue-grey darken-4">
             <a href="#" class="brand-logo">Logo</a>
-            <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a href="sass.html">Messaging</a></li>
-                <li><a href="badges.html">Logins</a></li>
-            </ul>
-        </div>
-        <div class="nav-content">
-            <ul class="tabs tabs-transparent">
-                <li class="tab"><a class="active" href="#test-swipe-1">Test 1</a></li>
-                <li class="tab"><a class="active" href="#test2">Test 2</a></li>
-                <li class="tab"><a class="active" href="#test3">test 3</a></li>
-                <li class="tab"><a class="active" href="#test4">Test 4</a></li>
+                <li><a href="sass.html">Sass</a></li>
+                <li><a href="badges.html">Components</a></li>
+                <li><a href="collapsible.html">JavaScript</a></li>
             </ul>
         </div>
     </nav>
-    <div id="test-swipe-1" class="white">test1</div>
-    <div id="test2" class="white">test2</div>
-    <div id="test3" class="white">test3</div>
-    <div id="test4" class="white">test4</div>
 
-    <ul class="sidenav" id="mobile-demo">
-        <li><a href="sass.html">Sass</a></li>
-        <li><a href="badges.html">Components</a></li>
-        <li><a href="collapsible.html">JavaScript</a></li>
-    </ul>
+    <div class="row grey darken-3" id="UserFormArea">
+        <form class="col s12">
+            <div class="row">
+                <div class="input-field col s4"></div>
+                <div class="input-field col s4">
+                    <input id="Username" type="text" class="validate">
+                    <label for="Username">Username</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s4"></div>
+                <div class="input-field col s4">
+                    <input id="Password" type="tel" class="validate">
+                    <label for="Password">Password</label>
+                </div>
+            </div>
+        </form>
+    </div>
 
-    <!--JavaScript at end of body for optimized loading-->
-    <script type="text/javascript" src="materialize/js/materialize.min.js"></script>
+    <div class="row" id="messageArea">
+        <div class="col s2 grey darken-4">
+            <div class="well">
+                <h6 class="white-text">Online Users:</h6>
+                <ul class="list-group" id="users"></ul>
+            </div>
+        </div>
+
+        <div class="col s8 grey darken-3">
+            <div class="chat" id="chat"></div>
+            <form id="messageForm">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col s10">
+                            <div class="input-field">
+                                <textarea id="message" class="validate materialize-textarea white-text"></textarea>
+                                <label for="message">Enter Message</label>
+                            </div>
+                        </div>
+                        <div class="col s2">
+                            <button class="btn btn-large waves-effect waves-light" type="submit" name="action"
+                                value="Send Message">Submit
+                                <i class="material-icons right">send</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="col s2">info</div>
+    </div>
+
+    <script>
+        $(function () {
+            var socket = io.connect();
+            var $messageForm = $('#messageForm');
+            var $message = $('#message');
+            var $chat = $('#chat');
+
+            $messageForm.submit(e => {
+                e.preventDefault();
+                socket.emit('send message', $message.val());
+                $message.val('').removeClass('active');
+                M.updateTextFields();
+            })
+
+            socket.on('new message', data => {
+                var structure = {
+                    a: `<li class="collection-item avatar grey darken-4 white-text">
+                        <i class="material-icons circle">T</i>
+                        <span class="title">Title</span>
+                        <p>${data.msg}</p>
+                        <a href="#!" class="secondary-content">
+                        </a>
+                        </li>`
+                }
+
+                $chat.append(`<ul class="collection">${structure.a}</ul>`)
+            })
+        });
+    </script>
+
 </body>
 
 </html>
