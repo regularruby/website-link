@@ -11,10 +11,7 @@
         body {}
 
         #messageArea {
-            display: all;
-        }
-        #UserFormArea {
-            display: none
+            display: none;
         }
     </style>
 </head>
@@ -33,19 +30,27 @@
     </nav>
 
     <div class="row grey darken-3" id="UserFormArea">
-        <form class="col s12">
+        <form class="col s12" id = "userForm">
             <div class="row">
                 <div class="input-field col s4"></div>
                 <div class="input-field col s4">
-                    <input id="Username" type="text" class="validate">
+                    <input id="Username" type="text" class="validate materialize-textarea white-text">
                     <label for="Username">Username</label>
                 </div>
             </div>
             <div class="row">
                 <div class="input-field col s4"></div>
                 <div class="input-field col s4">
-                    <input id="Password" type="tel" class="validate">
+                    <input id="Password" type="password" class="validate materialize-textarea white-text">
                     <label for="Password">Password</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s4"></div>
+                <div class="col s4">
+                    <button class="btn btn-large waves-effect waves-light" type="submit" name="action"
+                        value="Login">Login
+                    </button>
                 </div>
             </div>
         </form>
@@ -55,7 +60,7 @@
         <div class="col s2 grey darken-4">
             <div class="well">
                 <h6 class="white-text">Online Users:</h6>
-                <ul class="list-group" id="users"></ul>
+                <div class="list-group" id="users"></div>
             </div>
         </div>
 
@@ -90,19 +95,51 @@
             var $messageForm = $('#messageForm');
             var $message = $('#message');
             var $chat = $('#chat');
+            var $messageArea = $("#messageArea")
+            var $UserFormArea = $("#UserFormArea")
+            var $userForm = $("#userForm")
+            var $users = $("#users")
+            var $Username = $("#Username")
+            var username
 
             $messageForm.submit(e => {
                 e.preventDefault();
-                socket.emit('send message', $message.val());
+                socket.emit('send message', $message.val(), username);
                 $message.val('').removeClass('active');
                 M.updateTextFields();
             })
+
+            $userForm.submit(e => {
+                e.preventDefault();
+                socket.emit('new user', $Username.val(), data => {
+                    if (data) {
+                        $UserFormArea.hide();
+                        $messageArea.show();
+                    }
+                });
+                username = $Username.val();
+                $Username.val('')
+            })
+
+            socket.on('get users', data => {
+                var html = '';
+                for (var i = 0; i < data.length; i++) {
+                    var structure = {
+                    a: `<li class="collection-item avatar grey darken-4 white-text">
+                        <i class="material-icons circle">T</i>
+                        <span class="title">${data[i]}</span>
+                        </li>`
+                }
+                    html += structure.a;
+                }
+                $users.append(`<ul class = "collection">${structure.a}</ul>`)
+            });
 
             socket.on('new message', data => {
                 var structure = {
                     a: `<li class="collection-item avatar grey darken-4 white-text">
                         <i class="material-icons circle">T</i>
-                        <span class="title">Title</span>
+                        <span class="title">${data.sender}</span>
                         <p>${data.msg}</p>
                         <a href="#!" class="secondary-content">
                         </a>
@@ -113,7 +150,6 @@
             })
         });
     </script>
-
 </body>
 
 </html>
